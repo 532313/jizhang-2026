@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>2026 年 11 月 · 支出记账</title>
+<style>
+:root{
+  --bg:#F4F5F7;
+  --card:#FFFFFF;
+  --ink:#131720;
+  --muted:#8B94A3;
+  --line:#ECEFF3;
+  --hair:#F5F6F9;
+  --daily:#2F6FEB;
+  --fixed:#7C5CD6;
+  --prepaid:#DE8B2C;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.page{max-width:780px;margin:0 auto;padding:44px 20px 72px}
+.eyebrow{margin:0;font-size:12px;letter-spacing:.18em;color:var(--muted)}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+.hero h1{margin:6px 0 0;font-size:34px;font-weight:700;letter-spacing:-.01em}
+.hero-total{text-align:right}
+.hero-total .label{display:block;font-size:12px;color:var(--muted)}
+.hero-total strong{display:block;font-size:40px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hero-total .sub{font-size:12px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--card);border-radius:14px;padding:14px 16px;border:1px solid rgba(19,23,32,.045);box-shadow:0 1px 2px rgba(19,23,32,.04)}
+.stat .name{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.stat strong{display:block;font-size:21px;margin-top:6px;font-variant-numeric:tabular-nums}
+.stat .meta{font-size:11px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.card{background:var(--card);border-radius:18px;padding:24px 24px 12px;margin-bottom:16px;border:1px solid rgba(19,23,32,.045);border-top:3px solid var(--accent,transparent);box-shadow:0 1px 3px rgba(19,23,32,.05)}
+.card-daily{--accent:var(--daily)}
+.card-fixed{--accent:var(--fixed)}
+.card-prepaid{--accent:var(--prepaid)}
+.card-cat{--accent:#D7DCE5}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.card-head h2{margin:0;font-size:17px;font-weight:650;display:flex;align-items:center;gap:8px}
+.card-total{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums}
+.card-desc{margin:3px 0 14px;font-size:12px;color:var(--muted)}
+.day{padding:2px 0 6px}
+.day + .day{border-top:1px solid var(--line)}
+.day-head{display:flex;align-items:baseline;gap:8px;padding:12px 0 4px}
+.day-date{font-size:13px;font-weight:650}
+.day-week{font-size:12px;color:var(--muted)}
+.day-sum{margin-left:auto;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums}
+.day-count{font-size:11px;color:var(--muted);min-width:34px;text-align:right}
+.items{list-style:none;margin:0;padding:0}
+.item{padding:8px 0}
+.item + .item{border-top:1px solid var(--hair)}
+.item-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center}
+.item-left{display:flex;flex-direction:column;gap:2px;min-width:0}
+.item-name{font-size:14px}
+.item-date{font-size:11px;color:var(--muted);margin-right:7px;font-variant-numeric:tabular-nums}
+.item-note{font-size:11.5px;color:var(--muted)}
+.item-cat{font-size:11px;color:#6B7280;background:#F3F4F7;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.item-amount{font-size:14px;font-variant-numeric:tabular-nums;text-align:right;min-width:82px}
+.legend{display:flex;gap:14px;align-items:center;font-size:11px;color:var(--muted);margin:0 0 10px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.cat-row{display:grid;grid-template-columns:82px 1fr 86px 60px;gap:14px;align-items:center;padding:9px 0}
+.cat-row + .cat-row{border-top:1px solid var(--hair)}
+.cat-name{font-size:13px}
+.track{height:6px;background:#F1F3F7;border-radius:999px;overflow:hidden}
+.fill{display:block;height:100%;border-radius:999px}
+.cat-amount{font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.cat-pct{font-size:11.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.foot{margin-top:22px;text-align:center;font-size:11px;color:var(--muted)}
+@media (max-width:640px){
+  .page{padding:28px 14px 56px}
+  .hero{flex-direction:column;align-items:flex-start;gap:10px}
+  .hero h1{font-size:28px}
+  .hero-total{text-align:left}
+  .hero-total strong{font-size:32px}
+  .stats{grid-template-columns:1fr}
+  .card{padding:18px 16px 10px;border-radius:14px}
+  .cat-row{grid-template-columns:72px 1fr 80px}
+  .cat-pct{display:none}
+  .item-cat{font-size:10.5px;padding:1px 7px}
+}
+@media print{
+  body{background:#fff}
+  .page{max-width:none;padding:0}
+  .card{box-shadow:none;break-inside:avoid;margin-bottom:12px}
+}
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">支出账本</p>
+      <h1>2026 年 11 月</h1>
+    </div>
+    <div class="hero-total">
+      <span class="label">本月总计</span>
+      <strong>¥4,002.20</strong>
+      <span class="sub">共 36 笔 · 数据截至 11 月 7 日</span>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="name"><i class="dot" style="background:var(--daily)"></i>日常开销</span>
+      <strong>¥752.20</strong>
+      <span class="meta">31 笔 · 每天吃喝出行</span>
+    </div>
+    <div class="stat">
+      <span class="name"><i class="dot" style="background:var(--fixed)"></i>固定支出</span>
+      <strong>¥3,032.00</strong>
+      <span class="meta">3 笔 · 每月都要交</span>
+    </div>
+    <div class="stat">
+      <span class="name"><i class="dot" style="background:var(--prepaid)"></i>预付 / 专项</span>
+      <strong>¥218.00</strong>
+      <span class="meta">2 笔 · 以后才会用</span>
+    </div>
+  </div>
+
+  
+    <section class="card card-daily">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--daily)"></span>日常开销</h2>
+        <span class="card-total">¥752.20</span>
+      </div>
+      <p class="card-desc">吃 · 喝 · 行 · 用，当天或几天内就消耗掉</p>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 1 日</span>
+          <span class="day-week">周日</span>
+          <span class="day-sum">¥86.60</span>
+          <span class="day-count">6 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">外卖</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥21.70</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">特仑苏（6 瓶）</span>
+                <span class="item-note">6 瓶合计 4.9 元</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥4.90</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">矿泉水</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥3.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">共享单车</span>
+                <span class="item-note">骑行 1 次</span>
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥1.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">羽毛球（AA）</span>
+                <span class="item-note">AA 分摊，自己出 50 元</span>
+              </div>
+              <span class="item-cat">运动</span>
+              <span class="item-amount">¥50.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">矿泉水</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥6.00</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 2 日</span>
+          <span class="day-week">周一</span>
+          <span class="day-sum">¥85.90</span>
+          <span class="day-count">3 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">香港往返路费</span>
+                <span class="item-note">往返，约 30 元</span>
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥30.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">特仑苏（6 瓶）</span>
+                <span class="item-note">6 瓶合计 4.9 元</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥4.90</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">肯德基</span>
+                <span class="item-note">晚饭</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥51.00</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 3 日</span>
+          <span class="day-week">周二</span>
+          <span class="day-sum">¥70.30</span>
+          <span class="day-count">4 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">香港往返路费</span>
+                <span class="item-note">往返，约 30 元</span>
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥30.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">外卖</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥13.40</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">外卖</span>
+                <span class="item-note">晚饭</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥24.90</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">饮料</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥2.00</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 4 日</span>
+          <span class="day-week">周三</span>
+          <span class="day-sum">¥30.80</span>
+          <span class="day-count">3 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">外卖</span>
+                <span class="item-note">午饭</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥20.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">水龙头套</span>
+                
+              </div>
+              <span class="item-cat">购物</span>
+              <span class="item-amount">¥6.80</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">公交车</span>
+                
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥4.00</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 5 日</span>
+          <span class="day-week">周四</span>
+          <span class="day-sum">¥138.00</span>
+          <span class="day-count">3 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">交通</span>
+                
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥22.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">吃饭</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥60.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">买菜</span>
+                <span class="item-note">食材</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥56.00</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 6 日</span>
+          <span class="day-week">周五</span>
+          <span class="day-sum">¥191.60</span>
+          <span class="day-count">7 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">羽毛球拉线</span>
+                
+              </div>
+              <span class="item-cat">运动</span>
+              <span class="item-amount">¥80.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">租球拍</span>
+                
+              </div>
+              <span class="item-cat">运动</span>
+              <span class="item-amount">¥20.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">场地费</span>
+                
+              </div>
+              <span class="item-cat">运动</span>
+              <span class="item-amount">¥31.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">球费</span>
+                
+              </div>
+              <span class="item-cat">运动</span>
+              <span class="item-amount">¥34.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">共享单车</span>
+                
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥5.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">矿泉水</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥3.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">外卖</span>
+                <span class="item-note">午饭</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥18.60</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="day">
+        <div class="day-head">
+          <span class="day-date">11 月 7 日</span>
+          <span class="day-week">周六</span>
+          <span class="day-sum">¥149.00</span>
+          <span class="day-count">5 笔</span>
+        </div>
+        <ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">买菜</span>
+                <span class="item-note">食材</span>
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥48.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">打球</span>
+                
+              </div>
+              <span class="item-cat">运动</span>
+              <span class="item-amount">¥50.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">KFC</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥25.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">打车</span>
+                
+              </div>
+              <span class="item-cat">交通</span>
+              <span class="item-amount">¥14.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name">外卖</span>
+                
+              </div>
+              <span class="item-cat">餐饮</span>
+              <span class="item-amount">¥12.00</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+  
+    <section class="card card-fixed">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--fixed)"></span>固定支出</h2>
+        <span class="card-total">¥3,032.00</span>
+      </div>
+      <p class="card-desc">房租 · 水电 · 话费，每月都要交</p><ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name"><span class="item-date">11 月 2 日</span>电费</span>
+                <span class="item-note">本月电费</span>
+              </div>
+              <span class="item-cat">居住</span>
+              <span class="item-amount">¥99.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name"><span class="item-date">11 月 4 日</span>话费</span>
+                <span class="item-note">手机充值</span>
+              </div>
+              <span class="item-cat">通讯</span>
+              <span class="item-amount">¥33.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name"><span class="item-date">11 月 7 日</span>房租</span>
+                <span class="item-note">本月房租</span>
+              </div>
+              <span class="item-cat">居住</span>
+              <span class="item-amount">¥2,900.00</span>
+            </div>
+          </li>
+        </ul>
+    </section>
+  
+    <section class="card card-prepaid">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--prepaid)"></span>预付 / 专项</h2>
+        <span class="card-total">¥218.00</span>
+      </div>
+      <p class="card-desc">充值 · 机票 · 酒店 · 大件，钱付了、以后才用</p><ul class="items">
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name"><span class="item-date">11 月 1 日</span>DeepSeek 充值</span>
+                <span class="item-note">余额充值</span>
+              </div>
+              <span class="item-cat">数字服务</span>
+              <span class="item-amount">¥100.00</span>
+            </div>
+          </li>
+          <li class="item">
+            <div class="item-row">
+              <div class="item-left">
+                <span class="item-name"><span class="item-date">11 月 4 日</span>冲锋衣</span>
+                <span class="item-note">耐用品</span>
+              </div>
+              <span class="item-cat">购物</span>
+              <span class="item-amount">¥118.00</span>
+            </div>
+          </li>
+        </ul>
+    </section>
+  
+    <section class="card card-cat">
+      <div class="card-head">
+        <h2>分类合计</h2>
+        <span class="card-total">¥970.20</span>
+      </div>
+      <p class="card-desc">日常与预付，不含房租水电话费</p>
+      <div class="legend"><span><i class="dot" style="background:var(--daily)"></i>日常</span><span><i class="dot" style="background:var(--prepaid)"></i>预付</span></div>
+        <div class="cat-row">
+          <span class="cat-name">餐饮</span>
+          <div class="track"><i class="fill" style="width:100.0%;background:var(--daily)"></i></div>
+          <span class="cat-amount">¥374.40</span>
+          <span class="cat-pct">38.59%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">运动</span>
+          <div class="track"><i class="fill" style="width:70.8%;background:var(--daily)"></i></div>
+          <span class="cat-amount">¥265.00</span>
+          <span class="cat-pct">27.31%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">购物</span>
+          <div class="track"><i class="fill" style="width:33.3%;background:var(--prepaid)"></i></div>
+          <span class="cat-amount">¥124.80</span>
+          <span class="cat-pct">12.86%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">交通</span>
+          <div class="track"><i class="fill" style="width:28.3%;background:var(--daily)"></i></div>
+          <span class="cat-amount">¥106.00</span>
+          <span class="cat-pct">10.93%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">数字服务</span>
+          <div class="track"><i class="fill" style="width:26.7%;background:var(--prepaid)"></i></div>
+          <span class="cat-amount">¥100.00</span>
+          <span class="cat-pct">10.31%</span>
+        </div>
+    </section>
+    <section class="card card-fixed">
+      <div class="card-head">
+        <h2>固定支出构成</h2>
+        <span class="card-total">¥3,032.00</span>
+      </div>
+      <p class="card-desc">房租 · 水电 · 话费，按月必交</p>
+      <div class="legend"><span><i class="dot" style="background:var(--fixed)"></i>固定</span></div>
+        <div class="cat-row">
+          <span class="cat-name">居住</span>
+          <div class="track"><i class="fill" style="width:100.0%;background:var(--fixed)"></i></div>
+          <span class="cat-amount">¥2,999.00</span>
+          <span class="cat-pct">98.91%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">通讯</span>
+          <div class="track"><i class="fill" style="width:1.1%;background:var(--fixed)"></i></div>
+          <span class="cat-amount">¥33.00</span>
+          <span class="cat-pct">1.09%</span>
+        </div>
+    </section>
+
+  <p class="foot">共 36 笔 · 合计 ¥4,002.20 · 更新于 11 月 7 日</p>
+</main>
+</body>
+</html>
