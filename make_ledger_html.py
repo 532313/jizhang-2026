@@ -49,10 +49,18 @@ body{
 .card-fixed{--accent:var(--fixed)}
 .card-prepaid{--accent:var(--prepaid)}
 .card-cat{--accent:#D7DCE5}
-.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.card-head h2{margin:0;font-size:17px;font-weight:650;display:flex;align-items:center;gap:8px}
+.card-head{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.card-head h2{margin:0 auto 0 0;font-size:17px;font-weight:650;display:flex;align-items:center;gap:8px}
 .card-total{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums}
 .card-desc{margin:3px 0 14px;font-size:12px;color:var(--muted)}
+summary{list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::-moz-list-bullet{list-style:none}
+.chev{width:7px;height:7px;border-right:1.6px solid #A2A9B6;border-bottom:1.6px solid #A2A9B6;transform:rotate(-45deg);margin-left:10px;flex:none;transition:transform .16s ease}
+details[open] > summary .chev{transform:rotate(45deg)}
+.toolbar{display:flex;justify-content:flex-end;margin:0 0 10px}
+.btn{font:inherit;font-size:12px;color:#4B5464;background:var(--card);border:1px solid rgba(19,23,32,.09);border-radius:999px;padding:6px 13px;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+.btn:hover{border-color:rgba(19,23,32,.22);color:var(--ink)}
 .day{padding:2px 0 6px}
 .day + .day{border-top:1px solid var(--line)}
 .day-head{display:flex;align-items:baseline;gap:8px;padding:12px 0 4px}
@@ -141,16 +149,17 @@ def item_row(row, show_date=False):
 def day_block(day, items):
     rows = "".join(item_row(i) for i in items)
     return f"""
-      <div class="day">
-        <div class="day-head">
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">{day.month} 月 {day.day} 日</span>
           <span class="day-week">{d.WEEKDAYS[day.weekday()]}</span>
           <span class="day-sum">{money(d.day_sum(items))}</span>
           <span class="day-count">{len(items)} 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">{rows}
         </ul>
-      </div>"""
+      </details>"""
 
 
 CARD_COLORS = {"daily": "var(--daily)", "fixed": "var(--fixed)", "prepaid": "var(--prepaid)"}
@@ -158,13 +167,14 @@ CARD_COLORS = {"daily": "var(--daily)", "fixed": "var(--fixed)", "prepaid": "var
 
 def card(title, key, desc, total, body):
     return f"""
-    <section class="card card-{key}">
-      <div class="card-head">
+    <details class="card card-{key}" open>
+      <summary class="card-head">
         <h2><span class="dot" style="background:{CARD_COLORS[key]}"></span>{title}</h2>
         <span class="card-total">{money(total)}</span>
-      </div>
+        <span class="chev"></span>
+      </summary>
       <p class="card-desc">{desc}</p>{body}
-    </section>"""
+    </details>"""
 
 
 def typed_items(kind):
@@ -209,13 +219,14 @@ def cat_card():
         f'＋ 固定 {money(d.TOTAL_FIXED)} ＝ 本月总计 {money(d.TOTAL)}</div>'
     )
     return f"""
-    <section class="card card-cat">
-      <div class="card-head">
+    <details class="card card-cat" open>
+      <summary class="card-head">
         <h2>分类构成</h2>
         <span class="card-total">{money(d.TOTAL)}</span>
-      </div>
+        <span class="chev"></span>
+      </summary>
       <p class="card-desc">按类型分组，每组的百分比以本组小计为分母</p>{body}{eq}
-    </section>"""
+    </details>"""
 
 
 def build():
@@ -270,6 +281,8 @@ def build():
     </div>
   </div>
 
+  <div class="toolbar"><button class="btn" id="foldAll" type="button">全部收起</button></div>
+
   {card("日常开销", "daily", "吃 · 喝 · 行 · 用，当天或几天内就消耗掉", d.TOTAL_DAILY, days)}
   {card("固定支出", "fixed", "房租 · 水电 · 话费，每月都要交", d.TOTAL_FIXED, fixed)}
   {card("预付 / 专项", "prepaid", "充值 · 机票 · 酒店 · 大件，钱付了、以后才用", d.TOTAL_PREPAID, prepaid)}
@@ -277,6 +290,27 @@ def build():
 
   <p class="foot">共 {d.COUNT} 笔 · 合计 {money(d.TOTAL)} · 更新于 {today.month} 月 {today.day} 日</p>
 </main>
+<script>
+(function () {{
+  var btn = document.getElementById("foldAll");
+  function all() {{
+    return Array.prototype.slice.call(document.querySelectorAll("details"));
+  }}
+  function sync() {{
+    var every = all().every(function (d) {{ return d.open; }});
+    btn.textContent = every ? "全部收起" : "全部展开";
+  }}
+  btn.addEventListener("click", function () {{
+    var every = all().every(function (d) {{ return d.open; }});
+    all().forEach(function (d) {{ d.open = !every; }});
+    sync();
+  }});
+  document.addEventListener("toggle", sync, true);
+  window.addEventListener("beforeprint", function () {{
+    all().forEach(function (d) {{ d.open = true; }});
+  }});
+}})();
+</script>
 </body>
 </html>
 """

@@ -43,10 +43,18 @@ body{
 .card-fixed{--accent:var(--fixed)}
 .card-prepaid{--accent:var(--prepaid)}
 .card-cat{--accent:#D7DCE5}
-.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.card-head h2{margin:0;font-size:17px;font-weight:650;display:flex;align-items:center;gap:8px}
+.card-head{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.card-head h2{margin:0 auto 0 0;font-size:17px;font-weight:650;display:flex;align-items:center;gap:8px}
 .card-total{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums}
 .card-desc{margin:3px 0 14px;font-size:12px;color:var(--muted)}
+summary{list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::-moz-list-bullet{list-style:none}
+.chev{width:7px;height:7px;border-right:1.6px solid #A2A9B6;border-bottom:1.6px solid #A2A9B6;transform:rotate(-45deg);margin-left:10px;flex:none;transition:transform .16s ease}
+details[open] > summary .chev{transform:rotate(45deg)}
+.toolbar{display:flex;justify-content:flex-end;margin:0 0 10px}
+.btn{font:inherit;font-size:12px;color:#4B5464;background:var(--card);border:1px solid rgba(19,23,32,.09);border-radius:999px;padding:6px 13px;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+.btn:hover{border-color:rgba(19,23,32,.22);color:var(--ink)}
 .day{padding:2px 0 6px}
 .day + .day{border-top:1px solid var(--line)}
 .day-head{display:flex;align-items:baseline;gap:8px;padding:12px 0 4px}
@@ -133,20 +141,24 @@ body{
     </div>
   </div>
 
+  <div class="toolbar"><button class="btn" id="foldAll" type="button">全部收起</button></div>
+
   
-    <section class="card card-daily">
-      <div class="card-head">
+    <details class="card card-daily" open>
+      <summary class="card-head">
         <h2><span class="dot" style="background:var(--daily)"></span>日常开销</h2>
         <span class="card-total">¥703.20</span>
-      </div>
+        <span class="chev"></span>
+      </summary>
       <p class="card-desc">吃 · 喝 · 行 · 用，当天或几天内就消耗掉</p>
-      <div class="day">
-        <div class="day-head">
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 1 日</span>
           <span class="day-week">周日</span>
           <span class="day-sum">¥86.60</span>
           <span class="day-count">6 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -209,14 +221,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 2 日</span>
           <span class="day-week">周一</span>
           <span class="day-sum">¥85.90</span>
           <span class="day-count">3 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -249,14 +262,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 3 日</span>
           <span class="day-week">周二</span>
           <span class="day-sum">¥70.30</span>
           <span class="day-count">4 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -299,14 +313,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 4 日</span>
           <span class="day-week">周三</span>
           <span class="day-sum">¥30.80</span>
           <span class="day-count">3 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -339,14 +354,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 5 日</span>
           <span class="day-week">周四</span>
           <span class="day-sum">¥138.00</span>
           <span class="day-count">3 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -379,14 +395,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 6 日</span>
           <span class="day-week">周五</span>
           <span class="day-sum">¥111.60</span>
           <span class="day-count">6 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -449,14 +466,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 7 日</span>
           <span class="day-week">周六</span>
           <span class="day-sum">¥149.00</span>
           <span class="day-count">5 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -509,14 +527,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-      <div class="day">
-        <div class="day-head">
+      </details>
+      <details class="day" open>
+        <summary class="day-head">
           <span class="day-date">11 月 9 日</span>
           <span class="day-week">周一</span>
           <span class="day-sum">¥31.00</span>
           <span class="day-count">1 笔</span>
-        </div>
+          <span class="chev"></span>
+        </summary>
         <ul class="items">
           <li class="item">
             <div class="item-row">
@@ -529,14 +548,15 @@ body{
             </div>
           </li>
         </ul>
-      </div>
-    </section>
+      </details>
+    </details>
   
-    <section class="card card-fixed">
-      <div class="card-head">
+    <details class="card card-fixed" open>
+      <summary class="card-head">
         <h2><span class="dot" style="background:var(--fixed)"></span>固定支出</h2>
         <span class="card-total">¥3,032.00</span>
-      </div>
+        <span class="chev"></span>
+      </summary>
       <p class="card-desc">房租 · 水电 · 话费，每月都要交</p><ul class="items">
           <li class="item">
             <div class="item-row">
@@ -569,13 +589,14 @@ body{
             </div>
           </li>
         </ul>
-    </section>
+    </details>
   
-    <section class="card card-prepaid">
-      <div class="card-head">
+    <details class="card card-prepaid" open>
+      <summary class="card-head">
         <h2><span class="dot" style="background:var(--prepaid)"></span>预付 / 专项</h2>
         <span class="card-total">¥532.00</span>
-      </div>
+        <span class="chev"></span>
+      </summary>
       <p class="card-desc">充值 · 机票 · 酒店 · 大件，钱付了、以后才用</p><ul class="items">
           <li class="item">
             <div class="item-row">
@@ -618,13 +639,14 @@ body{
             </div>
           </li>
         </ul>
-    </section>
+    </details>
   
-    <section class="card card-cat">
-      <div class="card-head">
+    <details class="card card-cat" open>
+      <summary class="card-head">
         <h2>分类构成</h2>
         <span class="card-total">¥4,267.20</span>
-      </div>
+        <span class="chev"></span>
+      </summary>
       <p class="card-desc">按类型分组，每组的百分比以本组小计为分母</p>
       <div class="cat-group">
         <div class="cat-group-head"><i class="dot" style="background:var(--daily)"></i><b>日常开销</b><span class="cat-group-count">31 笔</span><span class="cat-group-sum">¥703.20</span></div>
@@ -689,9 +711,30 @@ body{
           <span class="cat-pct">1.09%</span>
         </div>
       </div><div class="cat-eq">日常 ¥703.20 ＋ 预付 ¥532.00 ＋ 固定 ¥3,032.00 ＝ 本月总计 ¥4,267.20</div>
-    </section>
+    </details>
 
   <p class="foot">共 38 笔 · 合计 ¥4,267.20 · 更新于 11 月 9 日</p>
 </main>
+<script>
+(function () {
+  var btn = document.getElementById("foldAll");
+  function all() {
+    return Array.prototype.slice.call(document.querySelectorAll("details"));
+  }
+  function sync() {
+    var every = all().every(function (d) { return d.open; });
+    btn.textContent = every ? "全部收起" : "全部展开";
+  }
+  btn.addEventListener("click", function () {
+    var every = all().every(function (d) { return d.open; });
+    all().forEach(function (d) { d.open = !every; });
+    sync();
+  });
+  document.addEventListener("toggle", sync, true);
+  window.addEventListener("beforeprint", function () {
+    all().forEach(function (d) { d.open = true; });
+  });
+})();
+</script>
 </body>
 </html>
