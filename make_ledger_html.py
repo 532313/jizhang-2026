@@ -79,6 +79,13 @@ body{
 .fill{display:block;height:100%;border-radius:999px}
 .cat-amount{font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
 .cat-pct{font-size:11.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.cat-group{margin-top:4px}
+.cat-group + .cat-group{border-top:1px solid var(--line);margin-top:14px;padding-top:2px}
+.cat-group-head{display:flex;align-items:baseline;gap:8px;padding:12px 0 2px;font-size:12px;color:var(--muted)}
+.cat-group-head b{font-size:13px;font-weight:650;color:var(--ink)}
+.cat-group-count{font-size:11px}
+.cat-group-sum{margin-left:auto;font-size:13px;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+.cat-eq{margin-top:13px;padding:12px 0 6px;border-top:1px dashed var(--hair);font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .foot{margin-top:22px;text-align:center;font-size:11px;color:var(--muted)}
 @media (max-width:640px){
   .page{padding:28px 14px 56px}
@@ -160,46 +167,55 @@ def card(title, key, desc, total, body):
     </section>"""
 
 
-def cat_card():
-    daily_cats = [c for c in d.CATS if d.cat_kind(c) != d.FIXED]
-    fixed_cats = [c for c in d.CATS if d.cat_kind(c) == d.FIXED]
+def typed_items(kind):
+    """某个类型下各分类的金额，按金额降序。"""
+    acc = {}
+    for row in d.ENTRIES:
+        if row[5] == kind:
+            acc[row[2]] = round(acc.get(row[2], 0) + row[3], 2)
+    return sorted(acc.items(), key=lambda kv: -kv[1])
 
-    def block(title, key, desc, cats, kinds):
-        total = round(sum(d.cat_sum(c) for c in cats), 2)
-        top = max((d.cat_sum(c) for c in cats), default=0)
-        rows = []
-        for c in cats:
-            amount = d.cat_sum(c)
-            pct = amount / total * 100 if total else 0
-            width = amount / top * 100 if top else 0
-            rows.append(
-                f"""
+
+def cat_group(kind, label, count, total):
+    items = typed_items(kind)
+    top = max((v for _, v in items), default=0)
+    rows = []
+    for name, amount in items:
+        pct = amount / total * 100 if total else 0
+        width = amount / top * 100 if top else 0
+        rows.append(
+            f"""
         <div class="cat-row">
-          <span class="cat-name">{e(c)}</span>
-          <div class="track"><i class="fill" style="width:{width:.1f}%;background:{COLORS[d.cat_kind(c)]}"></i></div>
+          <span class="cat-name">{e(name)}</span>
+          <div class="track"><i class="fill" style="width:{width:.1f}%;background:{COLORS[kind]}"></i></div>
           <span class="cat-amount">{money(amount)}</span>
           <span class="cat-pct">{pct:.2f}%</span>
         </div>"""
-            )
-        legend = "".join(
-            f'<span><i class="dot" style="background:{COLORS[k]}"></i>{k}</span>'
-            for k in kinds
-            if any(d.cat_kind(c) == k for c in cats)
         )
-        return f"""
-    <section class="card card-{key}">
-      <div class="card-head">
-        <h2>{title}</h2>
-        <span class="card-total">{money(total)}</span>
-      </div>
-      <p class="card-desc">{desc}</p>
-      <div class="legend">{legend}</div>{''.join(rows)}
-    </section>"""
+    return f"""
+      <div class="cat-group">
+        <div class="cat-group-head"><i class="dot" style="background:{COLORS[kind]}"></i><b>{label}</b><span class="cat-group-count">{count} 笔</span><span class="cat-group-sum">{money(total)}</span></div>{''.join(rows)}
+      </div>"""
 
-    return (
-        block("分类合计", "cat", "日常与预付，不含房租水电话费", daily_cats, ("日常", "预付"))
-        + block("固定支出构成", "fixed", "房租 · 水电 · 话费，按月必交", fixed_cats, ("固定",))
+
+def cat_card():
+    body = (
+        cat_group(d.DAILY, "日常开销", len(d.DAILY_ENTRIES), d.TOTAL_DAILY)
+        + cat_group(d.PREPAID, "预付 / 专项", len(d.PREPAID_ENTRIES), d.TOTAL_PREPAID)
+        + cat_group(d.FIXED, "固定支出", len(d.FIXED_ENTRIES), d.TOTAL_FIXED)
     )
+    eq = (
+        f'<div class="cat-eq">日常 {money(d.TOTAL_DAILY)} ＋ 预付 {money(d.TOTAL_PREPAID)} '
+        f'＋ 固定 {money(d.TOTAL_FIXED)} ＝ 本月总计 {money(d.TOTAL)}</div>'
+    )
+    return f"""
+    <section class="card card-cat">
+      <div class="card-head">
+        <h2>分类构成</h2>
+        <span class="card-total">{money(d.TOTAL)}</span>
+      </div>
+      <p class="card-desc">按类型分组，每组的百分比以本组小计为分母</p>{body}{eq}
+    </section>"""
 
 
 def build():

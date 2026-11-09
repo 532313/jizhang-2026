@@ -73,6 +73,13 @@ body{
 .fill{display:block;height:100%;border-radius:999px}
 .cat-amount{font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
 .cat-pct{font-size:11.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.cat-group{margin-top:4px}
+.cat-group + .cat-group{border-top:1px solid var(--line);margin-top:14px;padding-top:2px}
+.cat-group-head{display:flex;align-items:baseline;gap:8px;padding:12px 0 2px;font-size:12px;color:var(--muted)}
+.cat-group-head b{font-size:13px;font-weight:650;color:var(--ink)}
+.cat-group-count{font-size:11px}
+.cat-group-sum{margin-left:auto;font-size:13px;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+.cat-eq{margin-top:13px;padding:12px 0 6px;border-top:1px dashed var(--hair);font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .foot{margin-top:22px;text-align:center;font-size:11px;color:var(--muted)}
 @media (max-width:640px){
   .page{padding:28px 14px 56px}
@@ -615,49 +622,60 @@ body{
   
     <section class="card card-cat">
       <div class="card-head">
-        <h2>分类合计</h2>
-        <span class="card-total">¥1,235.20</span>
+        <h2>分类构成</h2>
+        <span class="card-total">¥4,267.20</span>
       </div>
-      <p class="card-desc">日常与预付，不含房租水电话费</p>
-      <div class="legend"><span><i class="dot" style="background:var(--daily)"></i>日常</span><span><i class="dot" style="background:var(--prepaid)"></i>预付</span></div>
-        <div class="cat-row">
-          <span class="cat-name">运动</span>
-          <div class="track"><i class="fill" style="width:100.0%;background:var(--prepaid)"></i></div>
-          <span class="cat-amount">¥499.00</span>
-          <span class="cat-pct">40.40%</span>
-        </div>
+      <p class="card-desc">按类型分组，每组的百分比以本组小计为分母</p>
+      <div class="cat-group">
+        <div class="cat-group-head"><i class="dot" style="background:var(--daily)"></i><b>日常开销</b><span class="cat-group-count">31 笔</span><span class="cat-group-sum">¥703.20</span></div>
         <div class="cat-row">
           <span class="cat-name">餐饮</span>
-          <div class="track"><i class="fill" style="width:81.2%;background:var(--daily)"></i></div>
+          <div class="track"><i class="fill" style="width:100.0%;background:var(--daily)"></i></div>
           <span class="cat-amount">¥405.40</span>
-          <span class="cat-pct">32.82%</span>
+          <span class="cat-pct">57.65%</span>
         </div>
         <div class="cat-row">
-          <span class="cat-name">购物</span>
-          <div class="track"><i class="fill" style="width:25.0%;background:var(--prepaid)"></i></div>
-          <span class="cat-amount">¥124.80</span>
-          <span class="cat-pct">10.10%</span>
+          <span class="cat-name">运动</span>
+          <div class="track"><i class="fill" style="width:45.6%;background:var(--daily)"></i></div>
+          <span class="cat-amount">¥185.00</span>
+          <span class="cat-pct">26.31%</span>
         </div>
         <div class="cat-row">
           <span class="cat-name">交通</span>
-          <div class="track"><i class="fill" style="width:21.2%;background:var(--daily)"></i></div>
+          <div class="track"><i class="fill" style="width:26.1%;background:var(--daily)"></i></div>
           <span class="cat-amount">¥106.00</span>
-          <span class="cat-pct">8.58%</span>
+          <span class="cat-pct">15.07%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">购物</span>
+          <div class="track"><i class="fill" style="width:1.7%;background:var(--daily)"></i></div>
+          <span class="cat-amount">¥6.80</span>
+          <span class="cat-pct">0.97%</span>
+        </div>
+      </div>
+      <div class="cat-group">
+        <div class="cat-group-head"><i class="dot" style="background:var(--prepaid)"></i><b>预付 / 专项</b><span class="cat-group-count">4 笔</span><span class="cat-group-sum">¥532.00</span></div>
+        <div class="cat-row">
+          <span class="cat-name">运动</span>
+          <div class="track"><i class="fill" style="width:100.0%;background:var(--prepaid)"></i></div>
+          <span class="cat-amount">¥314.00</span>
+          <span class="cat-pct">59.02%</span>
+        </div>
+        <div class="cat-row">
+          <span class="cat-name">购物</span>
+          <div class="track"><i class="fill" style="width:37.6%;background:var(--prepaid)"></i></div>
+          <span class="cat-amount">¥118.00</span>
+          <span class="cat-pct">22.18%</span>
         </div>
         <div class="cat-row">
           <span class="cat-name">数字服务</span>
-          <div class="track"><i class="fill" style="width:20.0%;background:var(--prepaid)"></i></div>
+          <div class="track"><i class="fill" style="width:31.8%;background:var(--prepaid)"></i></div>
           <span class="cat-amount">¥100.00</span>
-          <span class="cat-pct">8.10%</span>
+          <span class="cat-pct">18.80%</span>
         </div>
-    </section>
-    <section class="card card-fixed">
-      <div class="card-head">
-        <h2>固定支出构成</h2>
-        <span class="card-total">¥3,032.00</span>
       </div>
-      <p class="card-desc">房租 · 水电 · 话费，按月必交</p>
-      <div class="legend"><span><i class="dot" style="background:var(--fixed)"></i>固定</span></div>
+      <div class="cat-group">
+        <div class="cat-group-head"><i class="dot" style="background:var(--fixed)"></i><b>固定支出</b><span class="cat-group-count">3 笔</span><span class="cat-group-sum">¥3,032.00</span></div>
         <div class="cat-row">
           <span class="cat-name">居住</span>
           <div class="track"><i class="fill" style="width:100.0%;background:var(--fixed)"></i></div>
@@ -670,6 +688,7 @@ body{
           <span class="cat-amount">¥33.00</span>
           <span class="cat-pct">1.09%</span>
         </div>
+      </div><div class="cat-eq">日常 ¥703.20 ＋ 预付 ¥532.00 ＋ 固定 ¥3,032.00 ＝ 本月总计 ¥4,267.20</div>
     </section>
 
   <p class="foot">共 38 笔 · 合计 ¥4,267.20 · 更新于 11 月 9 日</p>
