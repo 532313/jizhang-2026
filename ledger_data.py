@@ -51,6 +51,8 @@ ENTRIES = [
     (dt.date(2026, 11, 10), "港深通勤", "交通", 30.00, "", DAILY),
     (dt.date(2026, 11, 10), "午饭", "餐饮", 39.00, "", DAILY),
     (dt.date(2026, 11, 10), "晚饭", "餐饮", 32.00, "", DAILY),
+    (dt.date(2026, 11, 11), "外卖", "餐饮", 12.00, "", DAILY),
+    (dt.date(2026, 11, 11), "公交车", "交通", 4.00, "", DAILY),
 ]
 
 DAILY_ENTRIES = [e for e in ENTRIES if e[5] == DAILY]
