@@ -162,7 +162,8 @@ body{
 .cal .cell{display:block}
 .cal .d{font-family:var(--serif);font-size:21px;line-height:1;font-variant-numeric:lining-nums}
 .cal .amt{display:block;margin-top:7px;font-size:12.5px;line-height:1.25;color:var(--ink-2);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.cal .is-today .amt{font-family:var(--sans);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.cal .amt.none{color:var(--muted)}
+.cal .today-mark{font-family:var(--sans);font-size:9px;line-height:1;color:var(--muted);margin-left:3px;letter-spacing:.04em}
 .cal .is-future .d{color:#726D63}
 .cal .is-blank .d{color:#726D63}
 .cal .marks{display:flex;gap:3px;height:7px;margin-top:7px}
@@ -247,7 +248,7 @@ summary:hover .fold{color:var(--ink)}
   .cal td{padding:7px 4px 8px 0;height:66px}
   .cal .d{font-size:18px}
   .cal .amt{font-size:10px;margin-top:5px;letter-spacing:0}
-  .cal .is-today .amt{font-size:9.5px;letter-spacing:0}
+  .cal .today-mark{font-size:8px;margin-left:2px}
   .cal .marks{margin-top:5px;gap:2px;height:6px}
   .cal .marks .mark{width:4px;height:4px}
   .legend{gap:7px 14px;font-size:10.5px}
@@ -354,27 +355,28 @@ def calendar_cell(day_num, ref, by_day, today):
     cls = ["cal-day"]
     if future and not is_today:
         cls.append("is-future")
-    if is_today:
-        cls.append("is-today")
+    today_mark = '<span class="today-mark" aria-hidden="true">今</span>' if is_today else ""
+    date_html = f'<span class="d">{day_num}{today_mark}</span>'
+    today_txt = "今天，" if is_today else ""
     if rows:
         sr = (
-            f"{date.month} 月 {day_num} 日{d.WEEKDAYS[date.weekday()]}，"
+            f"{date.month} 月 {day_num} 日{d.WEEKDAYS[date.weekday()]}，{today_txt}"
             f"支出 {money(total)} 元，含" + "、".join(TYPE_NAME[k] for k in kinds)
         )
         visual = (
-            f'<span class="d">{day_num}</span>'
+            date_html +
             f'<span class="amt">{money(total)}</span>'
             '<span class="marks">' + "".join(mark(k) for k in kinds) + "</span>"
         )
     elif is_today:
-        sr = f"{date.month} 月 {day_num} 日{d.WEEKDAYS[date.weekday()]}，今天，尚未记账"
-        visual = f'<span class="d">{day_num}</span><span class="amt">今天</span><span class="marks"></span>'
+        sr = f"{date.month} 月 {day_num} 日{d.WEEKDAYS[date.weekday()]}，今天，无支出"
+        visual = f'{date_html}<span class="amt none">—</span><span class="marks"></span>'
     elif future:
         sr = f"{date.month} 月 {day_num} 日{d.WEEKDAYS[date.weekday()]}，尚未记账"
-        visual = f'<span class="d">{day_num}</span><span class="amt"></span><span class="marks"></span>'
+        visual = f'{date_html}<span class="amt"></span><span class="marks"></span>'
     else:
         sr = f"{date.month} 月 {day_num} 日{d.WEEKDAYS[date.weekday()]}，无支出"
-        visual = f'<span class="d">{day_num}</span><span class="amt" style="color:var(--muted)">—</span><span class="marks"></span>'
+        visual = f'{date_html}<span class="amt none">—</span><span class="marks"></span>'
     return (
         f'<td class="{" ".join(cls)}"><span class="sr-only">{sr}</span>'
         f'<span class="cell" aria-hidden="true">{visual}</span></td>'
@@ -532,7 +534,7 @@ def masthead(ref):
   <header class="masthead">
     <div>
       <h1 class="h-title"><span class="h-month">{cn_month(ref.month)}月</span><span class="h-year">{ref.year} 年支出账</span></h1>
-      <p class="h-meta"><span class="nowrap">共 {d.COUNT} 笔，{len(d.daily_groups())} 个支出日。</span><span class="nowrap">数据截至 {d.DATA_THROUGH.month} 月 {d.DATA_THROUGH.day} 日。</span><span class="nowrap">金额单位：元。</span></p>
+      <p class="h-meta"><span class="nowrap">共 {d.COUNT} 笔，{len({row[0] for row in d.ENTRIES})} 个支出日。</span><span class="nowrap">数据截至 {d.DATA_THROUGH.month} 月 {d.DATA_THROUGH.day} 日。</span><span class="nowrap">金额单位：元。</span></p>
     </div>
     <div class="tally" aria-label="本月支出构成">
       {"".join(rows)}
