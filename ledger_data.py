@@ -70,6 +70,9 @@ ENTRIES = [
     (dt.date(2026, 11, 15), "充值 GPT Pro", "数字服务", 724.00, "订阅充值", PREPAID),
     (dt.date(2026, 11, 15), "发红包", "人情", 22.00, "", DAILY),
     (dt.date(2026, 11, 16), "KFC", "餐饮", 31.00, "", DAILY),
+    (dt.date(2026, 11, 17), "香港往返路费", "交通", 30.00, "往返", DAILY),
+    (dt.date(2026, 11, 17), "午饭", "餐饮", 13.00, "", DAILY),
+    (dt.date(2026, 11, 17), "晚饭", "餐饮", 42.50, "50 港币，按 0.85 折算", DAILY),
 ]
 
 DAILY_ENTRIES = [e for e in ENTRIES if e[5] == DAILY]
